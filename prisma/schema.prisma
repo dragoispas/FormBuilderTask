@@ -60,6 +60,7 @@ model VerificationToken {
 
 model Form {
     id     String  @id @default(cuid())
+    name   String?
     fields Field[]
     User   User?   @relation(fields: [userId], references: [id])
     userId String?
@@ -68,6 +69,7 @@ model Form {
 model Field {
     id     String @id @default(cuid())
     formId String
+    label String
 
     user Form @relation(fields: [formId], references: [id], onDelete: Cascade)
 }

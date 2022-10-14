@@ -6,9 +6,22 @@ import Single from "../components/UI/Layout/Single";
 import examples from "./api/examples";
 import { getSession } from "next-auth/react";
 import Main from "../components/UI/Layout/Main";
+import Link from "next/link";
+import router from "next/router";
+
+export type Form = {
+  id: number | string
+}
 
 const Forms: NextPage = () => {
-  const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+  const forms = trpc.forms.getAll.useQuery();
+  const formDeleteMutation = trpc.forms.delete.useMutation();
+  
+  const deleteForm = async (formId : string) => {
+    await formDeleteMutation.mutateAsync(formId);
+    forms.refetch();
+  }
+
   return (
     <>
       <Head>
@@ -17,7 +30,46 @@ const Forms: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Main>
-        <Single title="Forms">table here</Single>
+        <Single title="Forms">
+
+        <Link href='form/0'>
+          Create New Form
+        </Link>
+
+        {
+          forms.isFetching ?
+            <div>loading...</div> :
+            <table>
+              <thead>
+                <tr>
+                  <th>Form name</th>
+                  <th>Form ID</th>
+                  <th>Number of fields</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  forms.data && forms.data.map((form) => (
+                    <tr key={form.id}>
+                      <td>{form.name}</td>
+                      <td>{form.id}</td>
+                      <td>{form.fields.length}</td>
+                      <td>
+                        <Link href={`form/${form.id}`}>
+                          Edit
+                        </Link>
+                        <button onClick={() => deleteForm(form.id)}>
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table> 
+        }
+        </Single>
       </Main>
     </>
   );

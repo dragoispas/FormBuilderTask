@@ -94,9 +94,8 @@ export default function Main({ children }: { children: any }) {
                   <div className="mt-5 h-0 flex-1 overflow-y-auto">
                     <nav className="space-y-1 px-2">
                       {navigation.map((item) => (
-                        <Link href={item.href}>
+                        <Link key={item.name} href={item.href}>
                           <a
-                            key={item.name}
                             className={classNames(
                               item.current
                                 ? "bg-gray-100 text-gray-900"
